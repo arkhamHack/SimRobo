@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mujoco model="franka_panda">
+    <compiler angle="radian" meshdir="../assets/meshes" texturedir="../assets/textures" />
+    
+    <option timestep="0.002" iterations="50" solver="Newton" integrator="Euler" />
+    
+    <size njmax="500" nconmax="100" />
+    
+    <visual>
+        <global azimuth="120" elevation="-20"/>
+        <quality shadowsize="4096" offsamples="8"/>
+        <map force="0.1" zfar="30"/>
+        <scale forcewidth="0.01" contactheight="0.05" contactwidth="0.1"/>
+    </visual>
+
+    <asset>
+        <!-- Textures -->
+        <texture name="metal" type="cube" builtin="flat" rgb1="0.5 0.5 0.5" width="128" height="128" mark="cross" markrgb="1 1 1"/>
+        <texture name="texplane" type="2d" builtin="checker" rgb1="0.2 0.3 0.4" rgb2="0.1 0.15 0.2" width="512" height="512"/>
+        
+        <!-- Materials -->
+        <material name="metal" texture="metal" reflectance="0.7" specular="0.5"/>
+        <material name="floor_mat" texture="texplane" texrepeat="4 4" specular="0.2"/>
+        <material name="panda_white" rgba="1 1 1 1" specular="0.5" shininess="0.5"/>
+        <material name="panda_blue" rgba="0 0.3 0.8 1" specular="0.5" shininess="0.8"/>
+        <material name="panda_black" rgba="0.05 0.05 0.05 1" specular="0.5" shininess="0.3"/>
+        <material name="panda_yellow" rgba="1 0.9 0 1" specular="0.5" shininess="0.3"/>
+        <material name="panda_red" rgba="1 0 0 1" specular="0.5" shininess="0.3"/>
+        <material name="cube_red" rgba="0.8 0.1 0.1 1" specular="0.8" shininess="0.9"/>
+    </asset>
+
+    <worldbody>
+        <!-- Ground -->
+        <geom name="floor" size="0 0 0.05" type="plane" material="floor_mat"/>
+        
+        <!-- Light -->
+        <light name="light1" mode="targetbodycom" target="panda_link0" pos="0.5 0.5 1.5" dir="0 0 -1" diffuse="0.8 0.8 0.8"/>
+        <light name="light2" pos="-0.5 -0.5 1.5" dir="0 0 -1" diffuse="0.5 0.5 0.5"/>
+        
+        <!-- Camera -->
+        <camera name="top_camera" pos="0 0 1.5" quat="0.707 0.707 0 0" fovy="45"/>
+        
+        <!-- Robot base -->
+        <body name="panda_link0" pos="0 0 0">
+            <inertial pos="0 0 0" mass="4.0" diaginertia="0.4 0.4 0.4"/>
+            <geom name="panda_base" type="box" size="0.15 0.15 0.05" material="panda_black" pos="0 0 0.025"/>
+            
+            <!-- Link 1 -->
+            <body name="panda_link1" pos="0 0 0.1">
+                <inertial pos="0 0 0.1" mass="3.0" diaginertia="0.3 0.3 0.3"/>
+                <joint name="joint1" axis="0 0 1" type="hinge" range="-2.9 2.9"/>
+                <geom name="panda_link1_geom" type="cylinder" size="0.05 0.1" material="panda_white" pos="0 0 0"/>
+                
+                <!-- Link 2 -->
+                <body name="panda_link2" pos="0 0 0.2">
+                    <inertial pos="0 0 0" mass="3.0" diaginertia="0.3 0.3 0.3"/>
+                    <joint name="joint2" axis="0 1 0" type="hinge" range="-1.76 1.76"/>
+                    <geom name="panda_link2_geom" type="cylinder" size="0.05 0.1" material="panda_white" pos="0 0 0"/>
+                    
+                    <!-- Link 3 -->
+                    <body name="panda_link3" pos="0 0 0.2">
+                        <inertial pos="0 0 0" mass="2.5" diaginertia="0.2 0.2 0.2"/>
+                        <joint name="joint3" axis="0 0 1" type="hinge" range="-2.9 2.9"/>
+                        <geom name="panda_link3_geom" type="cylinder" size="0.05 0.1" material="panda_white" pos="0 0 0"/>
+                        
+                        <!-- Link 4 -->
+                        <body name="panda_link4" pos="0.08 0 0.2">
+                            <inertial pos="0 0 0" mass="2.5" diaginertia="0.2 0.2 0.2"/>
+                            <joint name="joint4" axis="0 1 0" type="hinge" range="-3.07 0"/>
+                            <geom name="panda_link4_geom" type="cylinder" size="0.05 0.1" material="panda_white" pos="0 0 0"/>
+                            
+                            <!-- Link 5 -->
+                            <body name="panda_link5" pos="0.08 0 0.2">
+                                <inertial pos="0 0 0" mass="2.0" diaginertia="0.1 0.1 0.1"/>
+                                <joint name="joint5" axis="0 0 1" type="hinge" range="-2.9 2.9"/>
+                                <geom name="panda_link5_geom" type="cylinder" size="0.04 0.1" material="panda_white" pos="0 0 0"/>
+                                
+                                <!-- Link 6 -->
+                                <body name="panda_link6" pos="0 0 0.2">
+                                    <inertial pos="0 0 0" mass="1.5" diaginertia="0.1 0.1 0.1"/>
+                                    <joint name="joint6" axis="0 1 0" type="hinge" range="-0.02 3.75"/>
+                                    <geom name="panda_link6_geom" type="cylinder" size="0.04 0.08" material="panda_white" pos="0 0 0"/>
+                                    
+                                    <!-- Link 7 (Last arm joint) -->
+                                    <body name="panda_link7" pos="0 0 0.15">
+                                        <inertial pos="0 0 0" mass="0.5" diaginertia="0.05 0.05 0.05"/>
+                                        <joint name="joint7" axis="0 0 1" type="hinge" range="-2.9 2.9"/>
+                                        <geom name="panda_link7_geom" type="cylinder" size="0.035 0.07" material="panda_white" pos="0 0 0"/>
+                                        
+                                        <!-- Hand -->
+                                        <body name="panda_hand" pos="0 0 0.1">
+                                            <inertial pos="0 0 0" mass="0.7" diaginertia="0.01 0.01 0.01"/>
+                                            <geom name="panda_hand_geom" type="box" size="0.04 0.03 0.03" material="panda_blue" pos="0 0 0"/>
+                                            
+                                            <!-- End effector site for tracking -->
+                                            <site name="ee_site" pos="0 0 0.05" size="0.01" rgba="0 1 0 1" type="sphere"/>
+                                            
+                                            <!-- Left finger -->
+                                            <body name="panda_leftfinger" pos="0 0.02 0.035">
+                                                <inertial pos="0 0 0" mass="0.1" diaginertia="0.001 0.001 0.001"/>
+                                                <joint name="finger_joint1" axis="0 1 0" type="slide" range="0 0.04"/>
+                                                <geom name="panda_leftfinger_geom" type="box" size="0.015 0.005 0.025" material="panda_white"/>
+                                            </body>
+                                            
+                                            <!-- Right finger -->
+                                            <body name="panda_rightfinger" pos="0 -0.02 0.035">
+                                                <inertial pos="0 0 0" mass="0.1" diaginertia="0.001 0.001 0.001"/>
+                                                <joint name="finger_joint2" axis="0 1 0" type="slide" range="0 0.04"/>
+                                                <geom name="panda_rightfinger_geom" type="box" size="0.015 0.005 0.025" material="panda_white"/>
+                                            </body>
+                                        </body>
+                                    </body>
+                                </body>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+        </body>
+        
+        <!-- Table -->
+        <body name="table" pos="0.5 0 0">
+            <geom name="table_geom" type="box" size="0.3 0.3 0.05" pos="0 0 -0.05" material="panda_black"/>
+            
+            <!-- Red cube object on table -->
+            <body name="red_cube" pos="0 0 0.025">
+                <joint name="cube_joint" type="free"/>
+                <geom name="red_cube_geom" type="box" size="0.025 0.025 0.025" material="cube_red"/>
+            </body>
+        </body>
+        
+        <!-- Mocap body for IK target -->
+        <body name="mocap" pos="0 0 0" mocap="true">
+            <geom type="sphere" size="0.02" rgba="1 1 0 0.5" contype="0" conaffinity="0"/>
+        </body>
+    </worldbody>
+    
+    <!-- Actuators -->
+    <actuator>
+        <!-- Position actuators for arm joints -->
+        <position name="joint1_pos" joint="joint1" kp="150" ctrlrange="-2.9 2.9"/>
+        <position name="joint2_pos" joint="joint2" kp="150" ctrlrange="-1.76 1.76"/>
+        <position name="joint3_pos" joint="joint3" kp="150" ctrlrange="-2.9 2.9"/>
+        <position name="joint4_pos" joint="joint4" kp="150" ctrlrange="-3.07 0"/>
+        <position name="joint5_pos" joint="joint5" kp="150" ctrlrange="-2.9 2.9"/>
+        <position name="joint6_pos" joint="joint6" kp="150" ctrlrange="-0.02 3.75"/>
+        <position name="joint7_pos" joint="joint7" kp="150" ctrlrange="-2.9 2.9"/>
+        
+        <!-- Position actuators for gripper -->
+        <position name="finger_joint1_pos" joint="finger_joint1" kp="100" ctrlrange="0 0.04"/>
+        <position name="finger_joint2_pos" joint="finger_joint2" kp="100" ctrlrange="0 0.04"/>
+    </actuator>
+    
+    <!-- Equality for gripper mirroring -->
+    <equality>
+        <joint joint1="finger_joint1" joint2="finger_joint2" solimp="0.95 0.99 0.001" solref="0.005 1"/>
+    </equality>
+    
+    <!-- Simulation parameters -->
+    <contact>
+        <exclude body1="panda_leftfinger" body2="panda_link7"/>
+        <exclude body1="panda_rightfinger" body2="panda_link7"/>
+    </contact>
+</mujoco>

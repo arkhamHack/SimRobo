@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-JEPA 2 Robot Control</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Socket.IO for real-time communication -->
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <!-- Three.js libraries for 3D visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.148.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.148.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Zero-Shot Robotic Control with V-JEPA 2</h1>
+    </header>
+    
+    <main>
+        <div class="container">
+            <div class="panel status-panel">
+                <h2>System Status</h2>
+                <div class="status-container">
+                    <div class="status-item">
+                        <span class="status-label">Environment:</span>
+                        <span class="status-value" id="env-status">Not initialized</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">V-JEPA 2 Model:</span>
+                        <span class="status-value" id="model-status">Not loaded</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Controller:</span>
+                        <span class="status-value" id="controller-status">Not initialized</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Goal:</span>
+                        <span class="status-value" id="goal-status">Not set</span>
+                    </div>
+                </div>
+                <div class="button-container">
+                    <button id="initialize-btn" class="btn primary">Initialize System</button>
+                    <button id="reset-btn" class="btn secondary" disabled>Reset Environment</button>
+                    <button id="shutdown-btn" class="btn danger" disabled>Shutdown</button>
+                </div>
+                <div class="loading-indicator" id="loading">
+                    <div class="spinner"></div>
+                    <span>Processing...</span>
+                </div>
+                <div class="status-message" id="status-message"></div>
+            </div>
+
+            <div class="views-container">
+                <div class="panel view-panel">
+                    <h2>Current Observation</h2>
+                    <div class="image-container">
+                        <img id="observation-image" src="static/images/placeholder.png" alt="Current observation">
+                    </div>
+                    <div class="info-container">
+                        <div class="info-item">
+                            <span class="info-label">End Effector Position:</span>
+                            <span class="info-value" id="ee-position">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Gripper State:</span>
+                            <span class="info-value" id="gripper-state">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel view-panel">
+                    <h2>Goal Image</h2>
+                    <div class="image-container">
+                        <img id="goal-image" src="static/images/placeholder.png" alt="Goal image">
+                        <div class="overlay" id="goal-overlay">
+                            <span>Drop image here or click to upload</span>
+                        </div>
+                    </div>
+                    <div class="button-container">
+                        <input type="file" id="goal-upload" accept="image/*" hidden>
+                        <button id="upload-btn" class="btn secondary">Upload Goal Image</button>
+                        <button id="camera-btn" class="btn secondary">Capture Current View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel control-panel">
+                <h2>Control</h2>
+                <div class="control-options">
+                    <div class="option">
+                        <label for="planning-horizon">Planning Horizon:</label>
+                        <input type="number" id="planning-horizon" min="1" max="10" value="5">
+                    </div>
+                    <div class="option">
+                        <label for="distance-threshold">Distance Threshold:</label>
+                        <input type="range" id="distance-threshold" min="0.01" max="0.2" step="0.01" value="0.05">
+                        <span id="threshold-value">0.05</span>
+                    </div>
+                </div>
+                <div class="button-container">
+                    <button id="run-btn" class="btn primary" disabled>Run Control Loop</button>
+                    <button id="stop-btn" class="btn danger" disabled>Stop Execution</button>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span id="progress-text">0%</span>
+                        <span id="distance-text">Distance to goal: -</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel viz3d-panel">
+                <h2>3D Robot Visualization <button id="toggle-3d-btn" class="btn secondary">Show 3D View</button></h2>
+                <div id="robot-3d-container" class="robot-3d-container" style="display: none;">
+                    <!-- 3D visualization will be rendered here -->
+                </div>
+            </div>
+
+            <div class="panel log-panel">
+                <h2>Execution Log</h2>
+                <div class="log-container">
+                    <div class="log-entry" id="log-entries">
+                        <div class="log-timestamp">System initialized</div>
+                        <div class="log-message">Welcome to V-JEPA 2 Robot Control</div>
+                    </div>
+                </div>
+                <button id="clear-log-btn" class="btn secondary">Clear Log</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Zero-Shot Robotic Arm Control Using V-JEPA 2 | Built with PyBullet and V-JEPA 2</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js"></script>
+    <script src="static/js/main.js"></script>
+    <script src="static/js/visualization3d.js"></script>
+</body>
+</html>
