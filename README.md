@@ -39,27 +39,3 @@ project/
    ```
    python frontend/app.py
    ```
-
-## System Architecture
-
-The system consists of three main components:
-
-1. **Backend**: Handles the physics simulation, robot control, and planning logic
-2. **ML Module**: Incorporates the V-JEPA 2 model for visual embeddings and future state prediction
-3. **Frontend**: Provides a user interface to specify goals and monitor progress
-
-## Components Explanation
-
-- **Simulation Environment**: PyBullet physics engine simulating a Franka Panda arm
-- **V-JEPA 2 Model**: Pretrained encoder converts RGB frames to latent embeddings
-- **Action Optimization**: Cross-Entropy Method (CEM) optimizes actions to reach visual goals
-- **Planning Loop**: Predicts future states based on candidate actions and selects optimal trajectory
-
-## License
-
-This project is for research and demonstration purposes only.
-
-## Acknowledgments
-
-- Meta AI Research for the V-JEPA 2 model
-- PyBullet team for the physics simulation framework
