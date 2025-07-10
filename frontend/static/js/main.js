@@ -1,5 +1,5 @@
 // Constants and global variables
-const API_URL = window.location.origin;
+const API_URL = "http://localhost:8080";
 
 // Global variables
 let socket;
@@ -53,7 +53,13 @@ const controls = {
 };
 
 // Socket.io event handlers
-socket = io(API_URL);
+// Initialize socket connection with proper options
+socket = io(API_URL, {
+    transports: ['websocket', 'polling'],
+    path: '/socket.io',
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000
+});
 
 socket.on('connect', () => {
     logMessage('Connected to server');
@@ -72,7 +78,20 @@ socket.on('disconnect', () => {
 
 socket.on('observation', (data) => {
     // Update observation image
-    images.observation.src = `data:image/jpeg;base64,${data.image}`;
+    console.log('Received observation image update');
+    if (data && data.image) {
+        // Handle potential issues with image data
+        try {
+            // Strip any potential header if present
+            const imageData = data.image.replace(/^data:image\/(jpeg|png|gif);base64,/, '');
+            images.observation.src = `data:image/jpeg;base64,${imageData}`;
+            console.log('Observation image updated successfully');
+        } catch (error) {
+            console.error('Error processing observation image:', error);
+        }
+    } else {
+        console.error('Invalid observation data received:', data);
+    }
 });
 
 socket.on('control_result', (data) => {
@@ -490,8 +509,20 @@ function captureCurrentView() {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', function () {
-    // Connect to Socket.IO for all communication
-    socket = io(API_URL);
+    // Socket.IO is already initialized at the top, no need to reinitialize
+    // Just add debug logging
+    console.log('DOM loaded, socket connection status:', socket.connected ? 'connected' : 'disconnected');
+    
+    // Add debug listeners
+    socket.on('connect_error', (error) => {
+        console.error('Socket.IO connection error:', error);
+        logMessage('Connection error: ' + error.message, 'error');
+    });
+    
+    socket.on('connect_timeout', () => {
+        console.error('Socket.IO connection timeout');
+        logMessage('Connection timeout', 'error');
+    });
 
     // Setup event handlers
     buttons.initialize.addEventListener('click', initializeSystem);
